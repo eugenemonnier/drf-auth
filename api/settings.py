@@ -25,7 +25,7 @@ SECRET_KEY = 'g9la^4$9_*43vaqtj)jlezs%9nx4ukjc7hikrnah5db9$o#91a'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -36,14 +36,18 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'beer_reviews.apps.BeerReviewsConfig'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -123,11 +127,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+  STATIC_DIR,
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+      'rest_framework_simplejwt.authentication.JWTAuthentication',
+      'rest_framework.authentication.SessionAuthentication',
+      'rest_framework.authentication.BasicAuthentication',
     ]
 
 }
